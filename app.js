@@ -1,0 +1,130 @@
+/* === بيولوجيا الفجوات — RSS Feed Logic === */
+
+const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
+
+const FEEDS = [
+  'https://www.sciencealert.com/feed',
+  'https://www.livescience.com/feeds/all',
+  'https://phys.org/rss-feed/',
+  'https://www.sciencedaily.com/rss/all.xml',
+  'https://arstechnica.com/science/feed/'
+];
+
+// Keywords that signal a scientific correction or revision
+const KEYWORDS = [
+  'wrong', 'thought', 'believed', 'assumed', 'overturns', 'overturn',
+  'rewrit', 'redefin', 'challeng', 'revise', 'revision', 'reconsider',
+  'misconception', 'debunk', 'older than', 'earlier than', 'longer than',
+  'not what we', 'turns out', 'actually', 'surprised', 'unexpected',
+  'rethink', 'upend', 'shatter', 'myth', 'incorrect', 'mistake',
+  'fossil', 'ancient', 'million year', 'billion year', 'evolut',
+  'archaeolog', 'paleontolog', 'prehistor', 'origin of', 'ancestor',
+  'species', 'extinct', 'discovery changes', 'new finding',
+  'previously thought', 'conventional wisdom', 'long-held',
+  'contradicts', 'disproves', 'first time', 'never before'
+];
+
+function stripHtml(s) {
+  if (!s) return '';
+  return s.replace(/<[^>]*>/g, '').replace(/&[a-z]+;/gi, ' ').trim();
+}
+
+function matchesKeywords(title, desc) {
+  const text = (title + ' ' + desc).toLowerCase();
+  let score = 0;
+  for (const kw of KEYWORDS) {
+    if (text.includes(kw)) score++;
+  }
+  return score;
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr);
+    const diff = (Date.now() - d) / 1000;
+    if (diff < 0 || isNaN(diff)) return '';
+    if (diff < 3600) return Math.floor(diff / 60) + ' min';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd';
+    return d.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+  } catch { return ''; }
+}
+
+function extractDomain(url) {
+  try { return new URL(url).hostname.replace('www.', ''); } catch { return ''; }
+}
+
+async function fetchFeed(feedUrl) {
+  try {
+    const res = await fetch(RSS2JSON + encodeURIComponent(feedUrl));
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (data.status !== 'ok' || !data.items) return [];
+    return data.items.map(item => ({
+      title: stripHtml(item.title) || '',
+      url: item.link || feedUrl,
+      snippet: stripHtml(item.description || item.content || '').substring(0, 300),
+      date: item.pubDate || '',
+      domain: data.feed?.title || extractDomain(item.link || feedUrl)
+    }));
+  } catch { return []; }
+}
+
+function renderItem(item) {
+  const date = timeAgo(item.date);
+  return `<div class="feed-item">
+    <div class="fi-source">${item.domain}</div>
+    <div class="fi-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>
+    ${item.snippet ? `<div class="fi-snippet">${item.snippet.substring(0, 200)}</div>` : ''}
+    ${date ? `<div class="fi-date">${date}</div>` : ''}
+  </div>`;
+}
+
+async function loadFeed() {
+  const btn = document.getElementById('refreshBtn');
+  const area = document.getElementById('feedArea');
+  const countEl = document.getElementById('feedCount');
+
+  btn.disabled = true;
+  btn.textContent = 'جاري البحث...';
+  area.innerHTML = '<div class="loading"><div class="spinner"></div>جاري البحث في المصادر العلمية...</div>';
+
+  // Fetch all feeds in parallel
+  const results = await Promise.allSettled(FEEDS.map(f => fetchFeed(f)));
+  let allItems = [];
+  for (const r of results) {
+    if (r.status === 'fulfilled' && Array.isArray(r.value)) {
+      allItems.push(...r.value);
+    }
+  }
+
+  // Score and filter by keyword relevance
+  const scored = allItems.map(item => ({
+    ...item,
+    score: matchesKeywords(item.title, item.snippet)
+  }));
+
+  // Sort by score descending, then by date
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return new Date(b.date || 0) - new Date(a.date || 0);
+  });
+
+  // Take top items with score > 0, max 5
+  const filtered = scored.filter(i => i.score > 0).slice(0, 5);
+
+  if (filtered.length === 0) {
+    area.innerHTML = '<div class="empty">لم يُعثر على تصحيحات علمية جديدة هذه المرة — جرّب التحديث لاحقًا</div>';
+    countEl.textContent = '';
+  } else {
+    area.innerHTML = filtered.map(renderItem).join('');
+    countEl.textContent = filtered.length + ' من ' + allItems.length + ' مقالة تحتوي على تصحيح أو مراجعة';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'تحديث';
+}
+
+// Load on page open
+loadFeed();
