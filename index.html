@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بيولوجيا الفجوات — حين يملأ اليقين ما تعجز عنه الحفريات</title>
+<meta name="description" content="نظرة معرفية نقدية في الفجوات الأحفورية والتصحيحات العلمية المتكررة في البيولوجيا التطورية وعلم الآثار">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#faf9f6;--surface:#fff;--border:#e5e2d9;--text:#1c1917;--text2:#57534e;--text3:#a8a29e;
+  --amber:#92400e;--amber-bg:#fffbeb;--amber-border:#fde68a;
+  --red:#991b1b;--red-bg:#fef2f2;--red-border:#fecaca;
+  --blue:#1e40af;--blue-bg:#eff6ff;
+  --slate:#334155;
+}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.8}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 24px}
+.header-inner{max-width:780px;margin:0 auto}
+h1{font-size:26px;font-weight:800;color:var(--amber);margin-bottom:4px}
+.header-sub{font-size:14px;color:var(--text2);max-width:600px}
+
+/* SECTIONS */
+.content{max-width:780px;margin:0 auto;padding:0 24px}
+section{padding:28px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+h2{font-size:18px;font-weight:700;margin-bottom:14px;color:var(--text)}
+h3{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)}
+
+/* PURPOSE */
+.purpose{background:var(--blue-bg);border:1px solid #bfdbfe;border-radius:10px;padding:16px 20px;margin-top:20px;font-size:13px;color:var(--blue);line-height:1.9}
+.purpose strong{font-weight:700}
+
+/* DISCLAIMER */
+.disclaimer{background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;padding:20px 24px;margin-top:16px}
+.disclaimer-title{font-size:16px;font-weight:800;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.disclaimer p{font-size:13px;color:#7f1d1d;line-height:2}
+.disclaimer-img{margin-top:14px;border-radius:8px;border:1px solid var(--red-border);max-width:100%;cursor:pointer}
+.disclaimer-caption{font-size:11px;color:var(--text3);margin-top:6px;text-align:center}
+
+/* ANALOGY */
+.analogy-box{background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:10px;padding:18px 22px;margin-top:12px}
+.analogy-box p{font-size:13px;color:var(--amber);line-height:2}
+.vs-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+.vs-table th{background:var(--amber);color:#fff;padding:8px 12px;font-weight:600;text-align:right}
+.vs-table td{padding:8px 12px;border-bottom:1px solid var(--amber-border);vertical-align:top}
+.vs-table tr:nth-child(even) td{background:rgba(251,191,36,0.06)}
+
+/* EXAMPLES */
+.example-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:10px}
+.example-card .tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--amber-bg);color:var(--amber);margin-bottom:6px;display:inline-block}
+.example-card h3{margin-bottom:4px}
+.example-card p{font-size:13px;color:var(--text2);line-height:1.9}
+.example-card .correction{font-size:12px;color:var(--red);font-weight:600;margin-top:6px}
+.example-card .src{font-size:11px;color:var(--text3);margin-top:4px}
+.example-card .src a{color:var(--text3);text-decoration:underline}
+
+/* FEED */
+.feed-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.refresh-btn{border:1px solid var(--border);background:var(--surface);padding:7px 16px;border-radius:8px;font-family:inherit;font-size:12px;cursor:pointer;color:var(--text2);transition:all .15s}
+.refresh-btn:hover{border-color:#bbb;background:#fafafa}
+.refresh-btn:disabled{opacity:.4;cursor:wait}
+.feed-count{font-size:11px;color:var(--text3)}
+.feed-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:8px;transition:border-color .15s}
+.feed-item:hover{border-color:#ccc}
+.feed-item .fi-source{font-size:10px;color:var(--text3);margin-bottom:4px;direction:ltr;text-align:left}
+.feed-item .fi-title{font-size:14px;font-weight:600;line-height:1.7}
+.feed-item .fi-title a{color:var(--text);text-decoration:none}
+.feed-item .fi-title a:hover{color:var(--amber);text-decoration:underline}
+.feed-item .fi-snippet{font-size:12px;color:var(--text2);line-height:1.8;margin-top:4px;max-height:48px;overflow:hidden}
+.feed-item .fi-date{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--text3);font-size:13px}
+.spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:30px;color:var(--text3);font-size:13px}
+
+/* FOOTER */
+footer{text-align:center;padding:24px;font-size:12px;color:var(--text3);border-top:1px solid var(--border);background:var(--surface);margin-top:20px}
+footer a{color:var(--text2);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+@media(max-width:600px){
+  .content{padding:0 14px}
+  h1{font-size:22px}
+  .vs-table{font-size:12px}
+  .vs-table th,.vs-table td{padding:6px 8px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>بيولوجيا الفجوات</h1>
+    <div class="header-sub">حين يملأ اليقين ما تعجز عنه الحفريات</div>
+  </div>
+</header>
+
+<div class="content">
+
+<!-- PURPOSE -->
+<section>
+<div class="purpose">
+<strong>ما هذا الموقع؟</strong> هذه ليست صفحة ضد العلم. هذه صفحة تسأل: كم من الثقة يبررها حجم ما لا نعرفه؟
+البيولوجيا التطورية وعلم الحفريات وعلم الآثار تبني نظريات شاملة عن مئات ملايين السنين — لكن السجل الأحفوري مليء بفجوات هائلة، والتصحيحات العلمية لا تتوقف: «كنا نظن... ثم تبيّن...» عبارة تتكرر في الأدبيات العلمية أكثر مما ينبغي لحقل يُقدَّم للعامة وكأنه محسوم.
+هذا الموقع يجمع الأدلة من داخل العلم نفسه — لا من خارجه.
+</div>
+</section>
+
+<!-- DISCLAIMER -->
+<section>
+<div class="disclaimer">
+<div class="disclaimer-title">إخلاء المسؤولية التطوري</div>
+<p>
+يحتوي هذا الحقل العلمي على إفادات استشرافية تمتد لمئات ملايين السنين. وجميع الإفادات الواردة فيه هي بيانات تقديرية، فيما عدا العيّنات المادية المتوفرة فعليًا. تُمثّل هذه الإفادات أفضل تقديرات الباحثين في الوقت الراهن فيما يتعلق بأصول الأنواع، ومسارات التطور، والعلاقات بين الكائنات الحية.
+</p>
+<p>
+وقد تشتمل هذه الإفادات، على سبيل المثال لا الحصر، على أي عبارات يسبقها أو يتبعها أو يرد فيها كلمات مثل «نعتقد»، و«نُقدِّر»، و«تشير الأدلة»، و«على الأرجح»، و«يُرجَّح»، و«من المحتمل»، و«ربما»، و«تقريبًا»، و«منذ نحو»، و«يُعتقد أن»، و«الإجماع الحالي»، وغيرها من المصطلحات التقديرية.
+</p>
+<p>
+إن هذه الإفادات الاستشرافية تنطوي على فجوات أحفورية معلومة ومجهولة، وشكوك منهجية، وتعارضات بين النظريات المورفولوجية والجزيئية، وعوامل أخرى مهمة خارجة عن سيطرة الباحثين، قد تؤدي إلى اختلاف جوهري بين ما حدث فعليًا وما هو مُقدَّر حاليًا — كما حدث مرارًا في تاريخ هذا الحقل.
+</p>
+<p style="font-weight:700;margin-top:8px">
+حجم الفجوة في السجل الأحفوري: تُقدّر بعض الفجوات بـ 70 مليون سنة بين أقدم الحفريات المعروفة والأصل المُقدَّر لبعض الرتب الحيوانية. هذا ليس رقمًا مبالغًا فيه — هذا من الأدبيات العلمية المحكّمة المنشورة في Nature.
+</p>
+<img class="disclaimer-img" src="https://i.suar.me/qvKl1/l" alt="إخلاء مسؤولية أرامكو — مصدر الإلهام" loading="lazy">
+<div class="disclaimer-caption">مصدر الإلهام: إخلاء مسؤولية أرامكو السعودية عن «الإفادات الاستشرافية» — إذا كانت شركة نفط تتحفظ على توقعات بضع سنوات، فماذا عن توقعات ملايين السنين؟</div>
+</div>
+</section>
+
+<!-- ACCOUNTANT ANALOGY -->
+<section>
+<h2>قياس: المحاسب والفجوة</h2>
+<div class="analogy-box">
+<p>
+تخيّل أن محاسبًا يدير الشؤون المالية لشركة كبرى، ثم يتبيّن أن في سجلاته فجوة مدتها <strong>7 سنوات</strong> — لا مستندات، لا قيود، لا إيصالات. ماذا سيحدث؟ سيُعزل فورًا. قد يُحاكم. ولن يصدقه أحد إذا قال: «لكنني أفهم الصورة العامة لما حدث في تلك السنوات.»
+</p>
+<p style="margin-top:10px">
+الآن — في البيولوجيا التطورية، الفجوة ليست 7 سنوات. الفجوة <strong>70 مليون سنة</strong>. ومع ذلك لا يُعزل أحد، بل يُبنى إطار نظري شامل يُطبَّق على جميع الأنواع، ويُقدَّم للعامة بثقة تفوق ما تبرره الأدلة المتوفرة.
+</p>
+</div>
+
+<table class="vs-table" style="margin-top:16px">
+<tr><th>المقارنة</th><th>المحاسب</th><th>عالِم الحفريات</th></tr>
+<tr><td>حجم الفجوة</td><td>7 سنوات</td><td>70,000,000 سنة</td></tr>
+<tr><td>النتيجة عند اكتشاف الفجوة</td><td>عزل ومحاكمة محتملة</td><td>نشر ورقة علمية جديدة</td></tr>
+<tr><td>مستوى الثقة في الاستنتاجات</td><td>صفر — لا قيمة لتقارير بلا مستندات</td><td>عالٍ — «الإجماع العلمي»</td></tr>
+<tr><td>الموقف من التصحيحات المتكررة</td><td>دليل على فشل منهجي</td><td>«هكذا يعمل العلم»</td></tr>
+<tr><td>ردة الفعل حين يُكتشف خطأ عمره عقود</td><td>فضيحة</td><td>«اكتشاف مثير»</td></tr>
+</table>
+</section>
+
+<!-- REAL EXAMPLES -->
+<section>
+<h2>أمثلة حقيقية من داخل العلم</h2>
+
+<div class="example-card">
+<span class="tag">خطأ استمر 70 عامًا</span>
+<h3>سمكة السيلاكانث — 11 عضلة لم تكن موجودة أصلاً</h3>
+<p>لعقود، اعتقد العلماء أن سمكة السيلاكانث — «الأحفورة الحية» التي تُعدّ حلقة وصل بين الأسماك والفقاريات البرية — تمتلك 11 عضلة في فكها. بُنيت على هذا الافتراض نظريات كاملة عن تطور الجمجمة. في 2025، كشفت دراسة من جامعة ساو باولو ومعهد سميثسونيان أن هذه العضلات غير موجودة أصلاً.</p>
+<div class="correction">التصحيح: 70 سنة من الأدبيات العلمية بُنيت على تشريح خاطئ.</div>
+<div class="src"><a href="https://stats.sunrisestat.com/p/getting-coelacanths-right" target="_blank" rel="noopener">المصدر</a></div>
+</div>
+
+<div class="example-card">
+<span class="tag">فجوة 70 مليون سنة</span>
+<h3>الحرشفيات — ثلاث مشكلات في آنٍ واحد</h3>
+<p>رتبة الحرشفيات (السحالي والثعابين) تعاني من ثلاث مشكلات متزامنة: فجوة أحفورية تُقدّر بـ 70 مليون سنة بين أقدم الحفريات المعروفة والأصل المُقدَّر، ومحدودية العيّنات المتاحة لدراسة التطور، وتعارض صريح بين ما تقوله دراسات الشكل الخارجي وما تقوله الدراسات الجزيئية عن الأصل.</p>
+<div class="correction">النتيجة: النظريات المتنافسة تتعارض فيما بينها، والفجوة لم تُسدّ.</div>
+<div class="src"><a href="https://arabicedition.nature.com/journal/2018/05/s41586-018-0093-3" target="_blank" rel="noopener">Nature Arabic Edition</a></div>
+</div>
+
+<div class="example-card">
+<span class="tag">أقدم بـ 6,500 سنة</span>
+<h3>القمار — أقدم بآلاف السنين مما «كنا نظن»</h3>
+<p>كان «الإجماع العلمي» أن ألعاب الحظ نشأت في الشرق الأدنى وشرق أوروبا. ثم تبيّن أن سكان أمريكا الأصليين كانوا يمارسون ألعاب النرد قبل 12,000 سنة على الأقل — أي قبل أقدم الأدلة المعروفة سابقًا بنحو 6,500 سنة. ليس فرقًا هامشيًا — بل إعادة كتابة كاملة.</p>
+<div class="correction">التصحيح: كل ما كُتب عن «أصل القمار» كان خاطئًا جغرافيًا وزمنيًا.</div>
+<div class="src"><a href="https://www.404media.co/gambling-is-thousands-of-years-older-than-we-thought-rewriting-human-evolution/" target="_blank" rel="noopener">404 Media</a></div>
+</div>
+
+<div class="example-card">
+<span class="tag">خطأ استمر عقودًا</span>
+<h3>نساء العصر الحجري — 40% من الصيادين كانوا نساءً</h3>
+<p>لعقود، صنّف علماء الآثار تلقائيًا أي هيكل عظمي يُعثر عليه مع أسلحة على أنه ذكر — بناءً على نظرية «الرجل الصياد» التي عكست افتراضات العصر الفيكتوري لا الأدلة الأثرية. في 2018، كشف اكتشاف في بيرو أن نحو 40% من صيادي الطرائد الكبيرة في الأمريكتين كانوا نساءً.</p>
+<div class="correction">التصحيح: التحيز الثقافي شكّل التفسير العلمي لعقود كاملة.</div>
+<div class="src"><a href="https://www.broadhistory.com/weve-been-very-wrong-about-stone-age-women/" target="_blank" rel="noopener">Broad History</a></div>
+</div>
+
+</section>
+
+<!-- RSS FEED -->
+<section>
+<div class="feed-header">
+  <div>
+    <h2>آخر التصحيحات العلمية</h2>
+    <div class="feed-count" id="feedCount"></div>
+  </div>
+  <button class="refresh-btn" id="refreshBtn" onclick="loadFeed()">تحديث</button>
+</div>
+<div id="feedArea">
+  <div class="loading"><div class="spinner"></div>جاري البحث عن «كنا نظن...»</div>
+</div>
+</section>
+
+</div>
+
+<footer>
+  صُنع بواسطة <a href="https://youdo.blog" target="_blank" rel="noopener">يونس بن عمارة</a>
+  بمساعدة <a href="https://mulerun.com/invitation/C5UASC63TF59" target="_blank" rel="noopener">Mulerun.com</a>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
