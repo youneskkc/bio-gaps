@@ -10,18 +10,34 @@ const FEEDS = [
   'https://arstechnica.com/science/feed/'
 ];
 
-// Keywords that signal a scientific correction or revision
-const KEYWORDS = [
-  'wrong', 'thought', 'believed', 'assumed', 'overturns', 'overturn',
-  'rewrit', 'redefin', 'challeng', 'revise', 'revision', 'reconsider',
-  'misconception', 'debunk', 'older than', 'earlier than', 'longer than',
-  'not what we', 'turns out', 'actually', 'surprised', 'unexpected',
-  'rethink', 'upend', 'shatter', 'myth', 'incorrect', 'mistake',
-  'fossil', 'ancient', 'million year', 'billion year', 'evolut',
-  'archaeolog', 'paleontolog', 'prehistor', 'origin of', 'ancestor',
-  'species', 'extinct', 'discovery changes', 'new finding',
-  'previously thought', 'conventional wisdom', 'long-held',
-  'contradicts', 'disproves', 'first time', 'never before'
+// STRONG patterns: phrases that almost certainly indicate a correction/revision
+// An article MUST match at least one of these to qualify
+const STRONG = [
+  'than we thought', 'than previously thought', 'than scientists thought',
+  'than believed', 'than expected', 'than assumed', 'than we assumed',
+  'we were wrong', 'scientists were wrong', 'been wrong about',
+  'overturns', 'overturn', 'upends', 'rewrites', 'rewriting',
+  'debunks', 'debunked', 'misconception', 'long-held belief',
+  'conventional wisdom', 'challenges the idea', 'not what we thought',
+  'turns out', 'it turns out', 'actually wasn',
+  'previously thought', 'previously believed', 'previously assumed',
+  'older than', 'earlier than', 'younger than',
+  'rethink', 'rethinking', 'forces scientists to reconsider',
+  'contradicts', 'disproves', 'calls into question',
+  'changes everything we know', 'changes what we know',
+  'weren\'t what we thought', 'isn\'t what we thought',
+  'wrong for decades', 'wrong for years', 'incorrect for',
+  'pushes back the origin', 'pushes back the date',
+  'rewrite the textbook', 'rewriting the textbook',
+  'shatter', 'shatters'
+];
+
+// BONUS patterns: add extra score if the correction is in paleo/evo/archaeology
+const BONUS = [
+  'fossil', 'evolution', 'evolutionary', 'paleontolog', 'archaeolog',
+  'ancient', 'prehistor', 'million year', 'billion year',
+  'species', 'ancestor', 'extinct', 'origin of', 'human evolution',
+  'stone age', 'dinosaur', 'genome', 'dna reveal'
 ];
 
 function stripHtml(s) {
@@ -31,11 +47,18 @@ function stripHtml(s) {
 
 function matchesKeywords(title, desc) {
   const text = (title + ' ' + desc).toLowerCase();
-  let score = 0;
-  for (const kw of KEYWORDS) {
-    if (text.includes(kw)) score++;
+  // Must match at least one STRONG pattern — otherwise reject entirely
+  let strongHits = 0;
+  for (const kw of STRONG) {
+    if (text.includes(kw)) strongHits++;
   }
-  return score;
+  if (strongHits === 0) return 0;
+  // Bonus points for paleo/evo/archaeology context
+  let bonus = 0;
+  for (const kw of BONUS) {
+    if (text.includes(kw)) bonus++;
+  }
+  return strongHits * 10 + bonus;
 }
 
 function timeAgo(dateStr) {
@@ -116,10 +139,8 @@ async function loadFeed() {
 
   if (filtered.length === 0) {
     area.innerHTML = '<div class="empty">لم يُعثر على تصحيحات علمية جديدة هذه المرة — جرّب التحديث لاحقًا</div>';
-    countEl.textContent = '';
   } else {
     area.innerHTML = filtered.map(renderItem).join('');
-    countEl.textContent = filtered.length + ' من ' + allItems.length + ' مقالة تحتوي على تصحيح أو مراجعة';
   }
 
   btn.disabled = false;
